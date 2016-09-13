@@ -1,0 +1,95 @@
+<!DOCTYPE>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<style type="text/css">
+		.male{
+			color: #448aff;
+		}
+		.female{
+			color: #ff4081;
+		}
+		.glyphicon{
+			text-size: 18px;
+		}
+		.panel-body{
+			height: 280px;
+			overflow-y: auto;
+		}
+	</style>
+	<title>Paso 7</title>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<form class="form-inline">
+				<input type="number" class="form-control" id="usuarioCantidad">
+				<button class="btn btn-default" id="addUsers">A&ntilde;adir Usuarios</button>
+			</form>
+		</div>
+		<div class="row">
+			<div class="col-xs-12" id="resultado">
+				
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+$("#addUsers").on('click', function(event){
+	event.preventDefault();
+	var cantidad = $("#usuarioCantidad").val();
+	loadUsers(cantidad);
+})
+
+var loadUsers = function(n){
+	$.ajax({
+		url: 'https://randomuser.me/api/?results='+n+'&nat=us&inc=gender,name,email,phone,picture',
+		dataType: 'json',
+		success: function(data) {
+			$("#resultado").empty();
+			$.each(data.results, function(key, user){
+				var description = "";
+				$.ajax({
+					url: "https://www.randomtext.me/api/lorem/p-2/10-20",
+					dataType: "json",
+					success: function(data){
+						user.description = data.text_out;
+						addUser($("#resultado"),user);
+					}
+				});
+			});
+		}
+	});
+};				 
+
+var addUser = function(container, user){
+	var newUser = $('<div class="col-xs-6">'+
+						'<div class="panel panel-default">'+
+							'<div class="panel-heading text-center">'+
+								'<h3 class="text-capitalize">'+user.name.first+' '+user.name.last+'</h3>'+
+							'</div>'+	
+							'<div class="panel-body text-center">'+
+								'<img class="img-circle" src="'+user.picture.medium+'">'+
+								'<div class"row text-center">'+
+									'<div class="col-xs-2">'+
+										'<span class="glyphicon glyphicon-user '+user.gender+'"></span>'+
+									'</div>'+
+									'<div class="col-xs-5">'+
+										'<span class="glyphicon glyphicon-earphone"><span><p>'+user.phone+'</p>'+
+									'</div>'+
+									'<div class="col-xs-5">'+
+										'<span class="glyphicon glyphicon-envelope"><span><p>'+user.email+'</p>'+
+									'</div>'+
+								'</div>'+
+								'<div class="row text-justify">'+
+									'<h3>Descripci&oacute;n: </h3>'+user.description+
+								'</div>'+
+							'</div>'+	
+						'</div>'+
+					'</div>');
+	container.append(newUser);
+};
+	</script>
+</body>
+</html>
